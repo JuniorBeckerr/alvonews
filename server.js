@@ -7,6 +7,7 @@ dotenv.config();
 
 const app = express();
 app.use(bodyParser.json());
+app.use(express.static("public"));
 
 const PORT = process.env.PORT || 3000;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
