@@ -14,7 +14,7 @@ const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN; // token da página do 
 
 // Função para enviar mensagem
 async function sendMessage(recipientId, message) {
-    await fetch(`https://graph.facebook.com/v19.0/me/messages?access_token=${PAGE_ACCESS_TOKEN}`, {
+    await fetch(`https://graph.facebook.com/v23.0/me/messages?access_token=${PAGE_ACCESS_TOKEN}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
