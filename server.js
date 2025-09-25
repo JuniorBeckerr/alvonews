@@ -14,14 +14,18 @@ const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN; // token da página do 
 
 // Função para enviar mensagem
 async function sendMessage(recipientId, message) {
-    await fetch(`https://graph.facebook.com/v23.0/me/messages?access_token=${PAGE_ACCESS_TOKEN}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            recipient: { id: recipientId },
-            message: message,
-        }),
-    });
+    try {
+        const response = await fetch(`https://graph.facebook.com/v23.0/me/messages?access_token=${PAGE_ACCESS_TOKEN}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ recipient: { id: recipientId }, message }),
+        });
+
+        const data = await response.json();
+        console.log("📤 Mensagem enviada:", data);
+    } catch (err) {
+        console.error("❌ Erro no fetch:", err);
+    }
 }
 
 // Endpoint de verificação
@@ -47,7 +51,7 @@ app.post("/webhook/facebook", async (req, res) => {
     const body = req.body;
 
     if (body.object === "page") {
-        body.entry.forEach(async (entry) => {
+        for (const entry of body.entry) {
             const webhookEvent = entry.messaging[0];
             const senderId = webhookEvent.sender.id;
 
@@ -55,28 +59,25 @@ app.post("/webhook/facebook", async (req, res) => {
                 const userMessage = webhookEvent.message.text.toLowerCase();
 
                 if (userMessage.includes("oi")) {
-                    // espera 5 segundos
+                    // envia a resposta depois de 5s
                     setTimeout(async () => {
-                        await sendMessage(senderId, {
-                            text: "Tudo bem com você?",
-                            quick_replies: [
-                                {
-                                    content_type: "text",
-                                    title: "Sim",
-                                    payload: "SIM_PAYLOAD",
-                                },
-                                {
-                                    content_type: "text",
-                                    title: "Não",
-                                    payload: "NAO_PAYLOAD",
-                                },
-                            ],
-                        });
+                        try {
+                            await sendMessage(senderId, {
+                                text: "Tudo bem com você?",
+                                quick_replies: [
+                                    { content_type: "text", title: "Sim", payload: "SIM_PAYLOAD" },
+                                    { content_type: "text", title: "Não", payload: "NAO_PAYLOAD" },
+                                ],
+                            });
+                        } catch (err) {
+                            console.error("❌ Erro ao enviar mensagem:", err);
+                        }
                     }, 5000);
                 }
             }
-        });
+        }
 
+        // resposta IMEDIATA para o Facebook
         res.status(200).send("EVENT_RECEIVED");
     } else {
         res.sendStatus(404);
