@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
+import fetch from "node-fetch";
 
 dotenv.config();
 
@@ -9,6 +10,19 @@ app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 3000;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
+const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN; // token da página do FB
+
+// Função para enviar mensagem
+async function sendMessage(recipientId, message) {
+    await fetch(`https://graph.facebook.com/v19.0/me/messages?access_token=${PAGE_ACCESS_TOKEN}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            recipient: { id: recipientId },
+            message: message,
+        }),
+    });
+}
 
 // Endpoint de verificação
 app.get("/webhook/facebook", (req, res) => {
@@ -27,9 +41,46 @@ app.get("/webhook/facebook", (req, res) => {
 });
 
 // Endpoint para receber eventos
-app.post("/webhook/facebook", (req, res) => {
+app.post("/webhook/facebook", async (req, res) => {
     console.log("📩 Evento recebido:", JSON.stringify(req.body, null, 2));
-    res.status(200).send("EVENT_RECEIVED");
+
+    const body = req.body;
+
+    if (body.object === "page") {
+        body.entry.forEach(async (entry) => {
+            const webhookEvent = entry.messaging[0];
+            const senderId = webhookEvent.sender.id;
+
+            if (webhookEvent.message && webhookEvent.message.text) {
+                const userMessage = webhookEvent.message.text.toLowerCase();
+
+                if (userMessage.includes("oi")) {
+                    // espera 5 segundos
+                    setTimeout(async () => {
+                        await sendMessage(senderId, {
+                            text: "Tudo bem com você?",
+                            quick_replies: [
+                                {
+                                    content_type: "text",
+                                    title: "Sim",
+                                    payload: "SIM_PAYLOAD",
+                                },
+                                {
+                                    content_type: "text",
+                                    title: "Não",
+                                    payload: "NAO_PAYLOAD",
+                                },
+                            ],
+                        });
+                    }, 5000);
+                }
+            }
+        });
+
+        res.status(200).send("EVENT_RECEIVED");
+    } else {
+        res.sendStatus(404);
+    }
 });
 
 app.listen(PORT, () => {
