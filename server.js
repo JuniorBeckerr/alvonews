@@ -9,8 +9,8 @@ const app = express();
 app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 3000;
-const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
-const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN; // token da página do FB
+const VERIFY_TOKEN = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+const PAGE_ACCESS_TOKEN = "EAALHoX8zaPIBPmdwgeJDV2GDbqxuhPqnsx2D5W0LYZAQjJKH46FgoyVv9tygdwZCRZBZBIjKczt1mjcmYrlJB9n82TbOQFdSOQutFkUYkUrc9IHE5nisxGbESlzhUJlb8a5Gsl5dgkM2Pcq9ZBjZCdGFZBjQS431xffogxcg7uHE8WHAzCdHj60FGVQxuZAppt16yHJ7lAZDZD"; // token da página do FB
 
 // Função para enviar mensagem
 async function sendMessage(recipientId, message) {
