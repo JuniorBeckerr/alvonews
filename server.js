@@ -44,6 +44,10 @@ app.get("/webhook/facebook", (req, res) => {
     }
 });
 
+app.get("/teste", (req, res) => {
+    res.status(200).send("ok");
+});
+
 // Endpoint para receber eventos
 app.post("/webhook/facebook", async (req, res) => {
     console.log("📩 Evento recebido:", JSON.stringify(req.body, null, 2));
