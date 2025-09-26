@@ -51,7 +51,7 @@ const conversationFlow = {
         ]
     },
     node_photo: {
-        text: "Aqui vai uma prévia pra te aquecer: [Placeholder: foto sensual com lingerie]. 🔥 Gostou? Vamos continuar esquentando?",
+        text: "🔥 Gostou? Vamos continuar esquentando?",
         image: "https://img.sexgram.ru/wp-content/uploads/2022/07/xmednisx-005-SexGram.ru_-scaled.jpg",
         options: [
             { title: "Amei, continua!", next: "node3" },
