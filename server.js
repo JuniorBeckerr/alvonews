@@ -118,7 +118,7 @@ const conversationFlow = {
     "node7": {
         "text": "Bora esquentar isso no WhatsApp? 😏 Clica aí pra me add e vamos continuar esse papo safado! 🔥",
         "options": [
-            { "title": "WhatsApp", "next": "node_end", "link": "https://pktapps.com/como-criar-foto-profissional-para-o-linkedin-usando-ia/" },
+            { "title": "WhatsApp", "next": "node_end", "link": "https://apialvonews.site/redirect/" },
             { "title": "Volto depois", "next": "node_end" }
         ]
     },
@@ -273,6 +273,45 @@ app.post("/webhook/facebook", async (req, res) => {
         res.status(200).send("EVENT_RECEIVED");
     } else {
         res.sendStatus(404);
+    }
+});
+
+const staticLinks = [
+    "https://google.com",
+    "https://github.com",
+    "https://openai.com"
+];
+
+app.get("/redirect", async (req, res) => {
+    const { type } = 1;
+
+    try {
+        let links = [];
+
+        if (type === "1") {
+            // Busca posts no WordPress
+            const response = await fetch("https://pktapps.com/wp-json/wp/v2/posts");
+            if (!response.ok) {
+                return res.status(500).json({ error: "Erro ao buscar posts" });
+            }
+            const posts = await response.json();
+            links = posts.map(post => post.link);
+        } else if (type === "2") {
+            links = staticLinks;
+        } else {
+            return res.status(400).json({ error: "Parâmetro type inválido (use 1 ou 2)" });
+        }
+
+        if (!Array.isArray(links) || links.length === 0) {
+            return res.status(404).json({ error: "Nenhum link disponível" });
+        }
+
+        const randomLink = links[Math.floor(Math.random() * links.length)];
+        return res.redirect(randomLink);
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Erro interno" });
     }
 });
 
