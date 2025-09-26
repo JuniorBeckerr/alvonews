@@ -18,88 +18,112 @@ const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 // -------------------
 const conversationFlow = {
     start: {
-        text: "Oi! Seja bem-vindo 👋",
-        options: [{ title: "Começar", next: "node1" }]
+        text: "Oi, tudo bom? 😊 Tô super animada pra te conhecer e compartilhar umas coisinhas especiais... Pronto pra começar?",
+        options: [{ title: "Tô pronto!", next: "node1" }]
     },
     node1: {
-        text: "Tudo bem com você?",
+        text: "Que legal! 😄 Como tá o teu dia? Tá afim de um papo descontraído que pode... esquentar um pouco? 😏",
         options: [
-            { title: "Sim 😃", next: "node2a" },
-            { title: "Não 😔", next: "node2b" }
+            { title: "Quero esse clima quente!", next: "node2a" },
+            { title: "Vamos de boa por enquanto", next: "node2b" }
         ]
     },
     node2a: {
-        text: "Que ótimo! Quer conhecer mais sobre o que tenho pra te mostrar?",
+        text: "Hmmm, adorei essa vibe! 😈 Que tal apimentar as coisas? Posso te mandar uma foto minha bem especial pra te deixar no clima... Topa?",
         options: [
-            { title: "Quero sim", next: "node3" },
-            { title: "Talvez depois", next: "node_end" }
+            { title: "Manda a foto!", next: "node_photo" },
+            { title: "Quero algo diferente", next: "node3" }
         ]
     },
     node2b: {
-        text: "Poxa, sinto muito. Talvez eu possa te animar. Quer conversar mais?",
+        text: "Tranquilo, vamos no seu ritmo! 😊 Quer conversar um pouco mais ou tá curioso pra algo mais... interessante? Quem sabe uma foto minha pra esquentar o papo?",
         options: [
-            { title: "Sim", next: "node3" },
-            { title: "Não", next: "node_end" }
+            { title: "Manda a foto!", next: "node_photo" },
+            { title: "Quero algo mais interessante", next: "node3" },
+            { title: "Quero só conversar", next: "node2b_extra" }
+        ]
+    },
+    node2b_extra: {
+        text: "Beleza, vamos de leve então! 😄 Mas só pra te provocar... já pensou em ver uma foto minha bem sensual? 😏 O que acha?",
+        options: [
+            { title: "Quero a foto!", next: "node_photo" },
+            { title: "Quero algo quente!", next: "node3" }
+        ]
+    },
+    node_photo: {
+        text: "Aqui vai uma prévia pra te aquecer: [Placeholder: foto sensual com lingerie]. 🔥 Gostou? Vamos continuar esquentando?",
+        image: "https://img.sexgram.ru/wp-content/uploads/2022/07/xmednisx-005-SexGram.ru_-scaled.jpg",
+        options: [
+            { title: "Amei, continua!", next: "node3" },
+            { title: "Quero mais disso!", next: "node3" }
         ]
     },
     node3: {
-        text: "Prefere que eu te mostre imagens 📸 ou te conte uma história 📖?",
+        text: "Tá ficando bom, hein? 😏 Quer que eu te mostre mais fotos sensuais 📸 ou prefere uma história picante que vai mexer com tua imaginação? 📖",
         options: [
-            { title: "Imagens", next: "node4a" },
-            { title: "História", next: "node4b" }
+            { title: "Mais fotos", next: "node4a" },
+            { title: "História picante", next: "node4b" }
         ]
     },
     node4a: {
-        text: "Legal! Tenho várias imagens para te mostrar. Quer ver agora?",
+        text: "Boa escolha! 😘 Minhas fotos são puro fogo... Quer outra amostrinha grátis agora?",
         options: [
-            { title: "Sim, quero!", next: "node5a" },
-            { title: "Não, deixa pra depois", next: "node_end" }
+            { title: "Quero agora!", next: "node5a" },
+            { title: "Descreve mais", next: "node4a_desc" }
         ]
     },
+    node4a_desc: {
+        text: "Tá curioso? 😜 Pensa em mim com uma lingerie vermelha, luzes suaves, deitada de um jeito que te faz querer ver mais... Quer a foto de verdade agora?",
+        options: [{ title: "Manda a foto!", next: "node5a" }]
+    },
     node4b: {
-        text: "Adoro contar histórias. Quer que seja curta ou longa?",
+        text: "Histórias são a minha praia! 😈 Quer uma curtinha que já te deixa no clima ou uma longa, cheia de detalhes quentes?",
         options: [
-            { title: "Curta", next: "node5b" },
-            { title: "Longa", next: "node5c" }
+            { title: "Curta e direta", next: "node5b" },
+            { title: "Longa e intensa", next: "node5c" }
         ]
     },
     node5a: {
-        text: "Aqui vai uma amostra... Quer mais conteúdos exclusivos?",
+        text: "Olha só essa: [Placeholder: outra foto sensual]. 🔥 Ficou com vontade de mais? Todo o meu conteúdo adulto tá disponível de graça!",
         options: [
-            { title: "Sim!", next: "node6" },
-            { title: "Não", next: "node_end" }
+            { title: "Quero mais!", next: "node6" },
+            { title: "Nossa, já tô dentro!", next: "node6" }
         ]
     },
     node5b: {
-        text: "História curta: ... Quer mais?",
+        text: "História curta: 'Estava sozinha, com uma música suave ao fundo. Minha pele arrepiava enquanto eu imaginava você me olhando... e aí, as coisas esquentaram.' 😏 Quer mais histórias, de graça?",
         options: [
-            { title: "Sim!", next: "node6" },
-            { title: "Não", next: "node_end" }
+            { title: "Sim, continua!", next: "node6" },
+            { title: "Quero ver fotos agora", next: "node6" }
         ]
     },
     node5c: {
-        text: "História longa: ... Quer mais?",
+        text: "História longa: 'Era uma noite quente, e eu tava com aquele fogo interno. Tirei cada peça de roupa bem devagar, sentindo o tecido deslizar. Imaginei você ali, me tocando, e cada movimento me levou mais fundo no prazer...' 😘 Quer acessar todas as minhas histórias e vídeos de graça?",
         options: [
-            { title: "Sim!", next: "node6" },
-            { title: "Não", next: "node_end" }
+            { title: "Quero tudo!", next: "node6" },
+            { title: "Tô louco por mais!", next: "node6" }
         ]
     },
     node6: {
-        text: "Ótimo! Para continuar, você pode acessar nosso conteúdo completo. Quer que eu te mande o link?",
+        text: "Você tá no clima perfeito! 😍 Minha campanha especial tá liberando todo o meu conteúdo adulto – fotos sensuais, vídeos quentes, histórias que vão te levar às nuvens – tudo de graça! Quer o link pra acessar agora?",
         options: [
-            { title: "Sim, manda!", next: "node7" },
-            { title: "Agora não", next: "node_end" }
+            { title: "Manda o link!", next: "node7" },
+            { title: "Me fala mais do conteúdo", next: "node6_extra" }
         ]
     },
+    node6_extra: {
+        text: "Claro, amor! 😘 Tem fotos minhas em poses provocantes, vídeos de momentos bem íntimos e histórias que vão fazer tua imaginação voar. Tudo grátis pra você curtir quando quiser. Pronto pro link?",
+        options: [{ title: "Manda agora!", next: "node7" }]
+    },
     node7: {
-        text: "Aqui está o link: https://exemplo.com/checkout 💳",
+        text: "Aqui tá o link pra todo o conteúdo liberado: https://exemplo.com/freecontent 🎉 Mergulha de cabeça e aproveita! 😘",
         options: [
-            { title: "Comprar agora", next: "node_end" },
-            { title: "Pensar mais um pouco", next: "node_end" }
+            { title: "Tô indo conferir!", next: "node_end" },
+            { title: "Volto depois", next: "node_end" }
         ]
     },
     node_end: {
-        text: "Ok, obrigado pela conversa! Volte sempre 😊"
+        text: "Adorei nosso papo! 😊 Volta quando quiser que a gente esquenta ainda mais! 🔥"
     }
 };
 
@@ -137,9 +161,23 @@ async function sendConversationNode(senderId, nodeKey) {
 
     userState[senderId] = nodeKey;
 
-    // monta mensagem
-    let message = { text: node.text };
+    let messagesToSend = [];
 
+    // se o node tiver imagem, envia imagem primeiro
+    if (node.image) {
+        messagesToSend.push({
+            attachment: {
+                type: "image",
+                payload: {
+                    url: node.image,
+                    is_reusable: true
+                }
+            }
+        });
+    }
+
+    // mensagem de texto
+    let message = { text: node.text };
     if (node.options && node.options.length > 0) {
         message.quick_replies = node.options.map((opt) => ({
             content_type: "text",
@@ -147,8 +185,12 @@ async function sendConversationNode(senderId, nodeKey) {
             payload: opt.next
         }));
     }
+    messagesToSend.push(message);
 
-    await sendMessage(senderId, message);
+    // envia tudo na ordem
+    for (const msg of messagesToSend) {
+        await sendMessage(senderId, msg);
+    }
 }
 
 // -------------------
