@@ -277,38 +277,34 @@ app.post("/webhook/facebook", async (req, res) => {
 });
 
 const staticLinks = [
-    "https://google.com",
-    "https://github.com",
-    "https://openai.com"
+    "https://pktapps.com/como-usar-o-modo-noturno-no-celular-para-cuidar-da-visao/",
+    "https://pktapps.com/descubra-os-5-melhores-aplicativos-de-relacionamento-de-2025/",
+    "https://pktapps.com/como-criar-foto-profissional-para-o-linkedin-usando-ia/"
 ];
 
 app.get("/redirect", async (req, res) => {
-    const { type } = 1;
-
     try {
-        let links = [];
-        //
-        // if (type === "1") {
-            // Busca posts no WordPress
-            const response = await fetch("https://pktapps.com/wp-json/wp/v2/posts");
-            if (!response.ok) {
-                return res.status(500).json({ error: "Erro ao buscar posts" });
-            }
-            const posts = await response.json();
-            links = posts.map(post => post.link);
-        // } else if (type === "2") {
-        //     links = staticLinks;
-        // } else {
-        //     return res.status(400).json({ error: "Parâmetro type inválido (use 1 ou 2)" });
-        // }
-
-        if (!Array.isArray(links) || links.length === 0) {
+        if (!Array.isArray(staticLinks) || staticLinks.length === 0) {
             return res.status(404).json({ error: "Nenhum link disponível" });
         }
 
-        const randomLink = links[Math.floor(Math.random() * links.length)];
-        return res.redirect(randomLink);
+        const randomLink = staticLinks[Math.floor(Math.random() * staticLinks.length)];
 
+        res.set("Referrer-Policy", "no-referrer");
+        return res.send(`<!doctype html>
+      <html>
+        <head>
+          <meta name="referrer" content="no-referrer">
+          <meta http-equiv="refresh" content="0; url=${randomLink}">
+          <script>
+            window.location.replace(${JSON.stringify(randomLink)});
+          </script>
+        </head>
+        <body>
+          Redirecionando...
+          <a rel="noreferrer noopener" href="${randomLink}">Clique aqui se não redirecionar</a>
+        </body>
+      </html>`);
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: "Erro interno" });
