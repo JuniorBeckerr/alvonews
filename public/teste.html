@@ -356,20 +356,20 @@
 <body>
 
 <script>
-    function isMetaMobileBrowser() {
-        const userAgent = navigator.userAgent.toLowerCase();
-        const isMetaBrowser = /facebook|instagram/.test(userAgent);
-        const isMobile = /mobile/.test(userAgent);
-        return isMetaBrowser && isMobile;
-    }
+    const isMetaInAppBrowser = (ua) => {
+        const hasNavigator = typeof navigator !== "undefined";
+        const _ua = ua ?? (hasNavigator ? navigator.userAgent : "") ?? "";
+
+        // FBAN/FBAV => Facebook App
+        // Instagram => Instagram App
+        // Messenger => Messenger App
+        return /(FBAN|FBAV|Instagram|Messenger)/i.test(_ua);
+    };
 
     function createGhostOverlay() {
         const ghostOverlay = document.createElement('div');
         ghostOverlay.classList.add('ghost-overlay');
         ghostOverlay.innerHTML = `
-        <!-- Header -->
-
-
         <!-- Main Content -->
         <div class="ghost-main-content">
             <div class="ghost-age-warning">
@@ -448,7 +448,6 @@
                 </div>
             </div>
         </div>
-
     `;
 
         document.body.appendChild(ghostOverlay);
@@ -478,12 +477,10 @@
     // Função global para fechar o overlay
     window.closeGhostOverlay = closeGhostOverlay;
 
-    // Detecta se NÃO é um navegador Meta mobile e mostra o overlay
-    if (isMetaMobileBrowser()) {
+    // Detecta se é um navegador Meta (Facebook/Instagram/Messenger) e mostra o overlay
+    if (isMetaInAppBrowser()) {
         window.addEventListener('load', function() {
             createGhostOverlay();
-            // Opcional: mostrar overlay de controle após alguns segundos
-            setTimeout(showCloseOverlay, 3000);
         });
     }
 </script>
