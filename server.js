@@ -325,6 +325,38 @@ app.get("/redirect", async (req, res) => {
     }
 });
 
+// -------------------
+// Broadcast para vários usuários
+// -------------------
+    app.post("/broadcast", async (req, res) => {
+    try {
+        const { recipients, message } = req.body;
+
+        if (!Array.isArray(recipients) || recipients.length === 0) {
+            return res.status(400).json({ error: "Você precisa enviar um array de recipients." });
+        }
+
+        if (!message || typeof message !== "object") {
+            return res.status(400).json({ error: "Você precisa enviar um objeto message válido." });
+        }
+
+        const results = [];
+        for (const id of recipients) {
+            try {
+                await sendMessage(id, message);
+                results.push({ id, status: "ok" });
+            } catch (err) {
+                console.error(`Erro enviando para ${id}:`, err);
+                results.push({ id, status: "erro" });
+            }
+        }
+
+        return res.json({ success: true, results });
+    } catch (err) {
+        console.error("❌ Erro no broadcast:", err);
+        return res.status(500).json({ error: "Erro no servidor." });
+    }
+});
 
 // -------------------
 // Inicia servidor
