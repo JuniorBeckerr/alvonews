@@ -125,7 +125,7 @@ const conversationFlow = {
     "node7": {
         "text": "Show! 😄 Clica aqui pra curtir todo o conteúdo gratuito que preparei pra você. Vamos continuar essa vibe! 🔥",
         "options": [
-            { "title": "Ver conteúdo!", "next": "node_end", "link": "https://apialvonews.site/redirect/" },
+            { "title": "Ver conteúdo!", "next": "node_end", "link": "https://api.alvonews.site/redirect/" },
             { "title": "Volto depois", "next": "node_end" }
         ]
     },
