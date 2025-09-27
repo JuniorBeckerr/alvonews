@@ -70,14 +70,14 @@ const conversationFlow = {
     "node4a": {
         "text": "Boa! 😘 Tenho umas fotos que vão te deixar com um sorrisinho no rosto. Quer ver uma agora ou prefere que eu te conte o que tem de especial nelas?",
         "options": [
-            { "title": "Manda agora!", "next": "node5a" },
+            { "title": "Manda agora!", "next": "node_photo2" },
             { "title": "Conta mais!", "next": "node4a_desc" }
         ]
     },
     "node4a_desc": {
         "text": "Imagina uma foto com uma vibe bem sensual, luz suave, e um olhar que te puxa pra dentro... 😏 Pronto pra ver de verdade?",
         "options": [
-            { "title": "Quero a foto!", "next": "node5a" }
+            { "title": "Quero a foto!", "next": "node_photo2" }
         ]
     },
     "node4b": {
@@ -87,8 +87,9 @@ const conversationFlow = {
             { "title": "Bem detalhada", "next": "node5c" }
         ]
     },
-    "node5a": {
+    "node_photo2": {
         "text": "🔥 Curtiu? Quer continuar vendo mais coisas legais assim? Tenho um monte de conteúdo incrível esperando por você!",
+        "image": "https://img.sexgram.ru/wp-content/uploads/2022/07/xmednisx-005-SexGram.ru_-scaled.jpg",
         "options": [
             { "title": "Quero mais disso!", "next": "node6" },
             { "title": "Tá demais!", "next": "node6" }
