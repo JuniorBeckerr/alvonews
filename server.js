@@ -89,7 +89,7 @@ const conversationFlow = {
     },
     "node_photo2": {
         "text": "🔥 Curtiu? Quer continuar vendo mais coisas legais assim? Tenho um monte de conteúdo incrível esperando por você!",
-        "image": "https://img.sexgram.ru/wp-content/uploads/2022/07/xmednisx-005-SexGram.ru_-scaled.jpg",
+        "image": "src=https://sexgram.ru/wp-content/uploads/2022/07/xmednisx-041-SexGram.ru_.jpg",
         "options": [
             { "title": "Quero mais disso!", "next": "node6" },
             { "title": "Tá demais!", "next": "node6" }
