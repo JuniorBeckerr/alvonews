@@ -287,8 +287,8 @@ app.get("/redirect", async (req, res) => {
 
     try {
         let links = [];
-
-        if (type === "1") {
+        //
+        // if (type === "1") {
             // Busca posts no WordPress
             const response = await fetch("https://pktapps.com/wp-json/wp/v2/posts");
             if (!response.ok) {
@@ -296,11 +296,11 @@ app.get("/redirect", async (req, res) => {
             }
             const posts = await response.json();
             links = posts.map(post => post.link);
-        } else if (type === "2") {
-            links = staticLinks;
-        } else {
-            return res.status(400).json({ error: "Parâmetro type inválido (use 1 ou 2)" });
-        }
+        // } else if (type === "2") {
+        //     links = staticLinks;
+        // } else {
+        //     return res.status(400).json({ error: "Parâmetro type inválido (use 1 ou 2)" });
+        // }
 
         if (!Array.isArray(links) || links.length === 0) {
             return res.status(404).json({ error: "Nenhum link disponível" });
