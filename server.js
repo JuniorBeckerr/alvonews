@@ -328,22 +328,21 @@ app.get("/redirect", async (req, res) => {
 // -------------------
 // Broadcast para vários usuários
 // -------------------
-    app.post("/broadcast", async (req, res) => {
+app.post("/broadcast", async (req, res) => {
     try {
         const { recipients, message } = req.body;
-
         if (!Array.isArray(recipients) || recipients.length === 0) {
-            return res.status(400).json({ error: "Você precisa enviar um array de recipients." });
+            return res.status(400).json({ error: "Envie um array de recipients" });
         }
 
-        if (!message || typeof message !== "object") {
-            return res.status(400).json({ error: "Você precisa enviar um objeto message válido." });
-        }
+        const messages = Array.isArray(message) ? message : [message];
 
         const results = [];
         for (const id of recipients) {
             try {
-                await sendMessage(id, message);
+                for (const msg of messages) {
+                    await sendMessage(id, msg);
+                }
                 results.push({ id, status: "ok" });
             } catch (err) {
                 console.error(`Erro enviando para ${id}:`, err);
