@@ -296,26 +296,35 @@ app.get("/redirect", async (req, res) => {
 
         const randomLink = staticLinks[Math.floor(Math.random() * staticLinks.length)];
 
+        // Header para todos os navegadores (inclui WebView do FB)
         res.set("Referrer-Policy", "no-referrer");
+
+        // Página minimalista, sem nada pesado que quebre no Messenger
         return res.send(`<!doctype html>
-      <html>
-        <head>
-          <meta name="referrer" content="no-referrer">
-          <meta http-equiv="refresh" content="0; url=${randomLink}">
-          <script>
-            window.location.replace(${JSON.stringify(randomLink)});
-          </script>
-        </head>
-        <body>
-          Redirecionando...
-          <a rel="noreferrer noopener" href="${randomLink}">Clique aqui se não redirecionar</a>
-        </body>
-      </html>`);
+<html>
+  <head>
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="refresh" content="0; url=${randomLink}">
+    <script>
+      // Messenger webview geralmente executa JS, isso garante redirect
+      window.location.replace(${JSON.stringify(randomLink)});
+    </script>
+    <style>
+      body { font-family: sans-serif; text-align: center; margin-top: 30px; }
+    </style>
+  </head>
+  <body>
+    Redirecionando...
+    <br><br>
+    <a rel="noreferrer noopener" href="${randomLink}">Clique aqui se não redirecionar</a>
+  </body>
+</html>`);
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: "Erro interno" });
     }
 });
+
 
 // -------------------
 // Inicia servidor
