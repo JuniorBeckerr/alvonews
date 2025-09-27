@@ -18,115 +18,120 @@ const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 // -------------------
 const conversationFlow = {
     "start": {
-        "text": "Oi, tudo bom? 😊 Tô super animada pra te conhecer e bater um papo safado... Pronto pra começar?",
-        "options": [{ "title": "Tô pronto!", "next": "node1" }]
+        "text": "Oi, tudo bem? 😊 Tô animada pra te conhecer e curtir um papo leve e divertido. Preparado pra começar?",
+        "options": [
+            { "title": "Tô dentro!", "next": "node1" },
+            { "title": "Conta mais!", "next": "node1" }
+        ]
     },
     "node1": {
-        "text": "Que legal! 😄 Como tá o teu dia? Tá afim de um papo descontraído que pode... esquentar um pouco? 😏",
+        "text": "Que bom te ver por aqui! 😄 Como tá sendo seu dia? Tô a fim de um papo descontraído, talvez com uma pitada de ousadia... 😏 O que acha?",
         "options": [
-            { "title": "Quero esquentar!", "next": "node2a" },
-            { "title": "Vamos devagar", "next": "node2b" }
+            { "title": "Quero um papo ousado!", "next": "node2a" },
+            { "title": "Vamos conversar mais", "next": "node2b" }
         ]
     },
     "node2a": {
-        "text": "Hmmm, adorei essa vibe! 😈 Que tal apimentar as coisas? Posso te mandar uma foto minha bem especial pra te deixar no clima... Topa?",
+        "text": "Amei essa energia! 😈 Quer apimentar um pouco? Tenho uma foto bem legal que posso compartilhar pra deixar o clima mais interessante. Topa?",
         "options": [
             { "title": "Manda a foto!", "next": "node_photo" },
-            { "title": "Quero algo mais", "next": "node3" }
+            { "title": "Quero algo mais!", "next": "node3" }
         ]
     },
     "node2b": {
-        "text": "Tranquilo, vamos no seu ritmo! 😊 Quer conversar um pouco mais ou tá curioso pra algo mais... interessante? Quem sabe uma foto minha pra esquentar o papo?",
+        "text": "Beleza, vamos no seu ritmo! 😊 Quer falar sobre algo divertido ou tá a fim de esquentar o papo com algo mais... especial? Quem sabe uma foto pra te animar?",
         "options": [
-            { "title": "Manda a foto!", "next": "node_photo" },
-            { "title": "Quero algo mais", "next": "node3" },
-            { "title": "Só conversa agora", "next": "node2b_extra" }
+            { "title": "Mostra a foto!", "next": "node_photo" },
+            { "title": "Só conversa por enquanto", "next": "node2b_extra" }
         ]
     },
     "node2b_extra": {
-        "text": "Beleza, vamos de leve então! 😄 Mas só pra te provocar... já pensou em ver uma foto minha bem sensual? 😏 O que acha?",
+        "text": "Tudo bem, vamos curtir um papo leve então! 😄 Só pra te dar um gostinho, já imaginou uma foto minha com uma vibe bem descontraída e charmosa? 😏 Quer ver?",
         "options": [
-            { "title": "Quero a foto!", "next": "node_photo" },
-            { "title": "Quero esquentar!", "next": "node3" }
+            { "title": "Quero ver a foto!", "next": "node_photo" },
+            { "title": "Quero algo mais quente", "next": "node3" }
         ]
     },
     "node_photo": {
-        "text": "🔥 Gostou? Vamos continuar esquentando?",
+        "text": "Olha só essa foto! 🔥 Gostou? Tenho mais coisas legais pra compartilhar, quer continuar nessa vibe?",
         "image": "https://img.sexgram.ru/wp-content/uploads/2022/07/xmednisx-005-SexGram.ru_-scaled.jpg",
         "options": [
-            { "title": "Amei, continua!", "next": "node3" },
-            { "title": "Quero mais disso!", "next": "node3" }
+            { "title": "Amei, quero mais!", "next": "node3" },
+            { "title": "Tá ficando bom!", "next": "node3" }
         ]
     },
     "node3": {
-        "text": "Tá ficando bom, hein? 😏 Quer que eu te mande mais fotos sensuais 📸 ou prefere uma fantasia picante que vai mexer com tua imaginação? 📖",
+        "text": "Tô adorando nosso papo! 😍 Quer ver mais fotos ou prefere que eu conte uma história bem interessante pra te deixar no clima?",
         "options": [
-            { "title": "Mais fotos", "next": "node4a" },
-            { "title": "Fantasia picante", "next": "node4b" }
+            { "title": "Mais fotos, por favor!", "next": "node4a" },
+            { "title": "Conta uma história!", "next": "node4b" }
         ]
     },
     "node4a": {
-        "text": "Boa escolha! 😘 Minhas fotos são puro fogo... Quer outra amostrinha agora?",
+        "text": "Boa! 😘 Tenho umas fotos que vão te deixar com um sorrisinho no rosto. Quer ver uma agora ou prefere que eu te conte o que tem de especial nelas?",
         "options": [
-            { "title": "Quero agora!", "next": "node5a" },
-            { "title": "Descreve mais", "next": "node4a_desc" }
+            { "title": "Manda agora!", "next": "node5a" },
+            { "title": "Conta mais!", "next": "node4a_desc" }
         ]
     },
     "node4a_desc": {
-        "text": "Tá curioso? 😜 Pensa em mim com uma lingerie vermelha, luzes suaves, deitada de um jeito que te faz querer ver mais... Quer a foto de verdade agora?",
-        "options": [{ "title": "Manda a foto!", "next": "node5a" }]
+        "text": "Imagina uma foto com uma vibe bem sensual, luz suave, e um olhar que te puxa pra dentro... 😏 Pronto pra ver de verdade?",
+        "options": [
+            { "title": "Quero a foto!", "next": "node5a" }
+        ]
     },
     "node4b": {
-        "text": "Fantasias são a minha praia! 😈 Quer uma curtinha que já te deixa no clima ou uma longa, cheia de detalhes quentes?",
+        "text": "Adoro uma boa história! 😈 Quer algo rápido e direto ou uma narrativa mais envolvente pra te levar pra outro clima?",
         "options": [
-            { "title": "Curta e direta", "next": "node5b" },
-            { "title": "Longa e intensa", "next": "node5c" }
+            { "title": "Rápida e quente", "next": "node5b" },
+            { "title": "Bem detalhada", "next": "node5c" }
         ]
     },
     "node5a": {
-        "text": "🔥 Ficou com vontade de mais? Vamos continuar esse papo safado?",
+        "text": "🔥 Curtiu? Quer continuar vendo mais coisas legais assim? Tenho um monte de conteúdo incrível esperando por você!",
         "options": [
-            { "title": "Quero mais!", "next": "node6" },
-            { "title": "Tô no clima!", "next": "node6" }
+            { "title": "Quero mais disso!", "next": "node6" },
+            { "title": "Tá demais!", "next": "node6" }
         ]
     },
     "node5b": {
-        "text": "Fantasia curta: 'Estava sozinha, com uma música suave ao fundo. Minha pele arrepiava enquanto eu imaginava você me olhando... e aí, as coisas esquentaram.' 😏 Quer mais fantasias?",
+        "text": "Tá aí: 'Eu tava num lugar tranquilo, luzes baixas, pensando em alguém especial... e aí as coisas começaram a esquentar na minha cabeça.' 😏 Quer mais histórias ou algo visual?",
         "options": [
-            { "title": "Sim, continua!", "next": "node6" },
-            { "title": "Quero fotos agora", "next": "node6" }
+            { "title": "Mais histórias!", "next": "node6" },
+            { "title": "Quero ver fotos!", "next": "node6" }
         ]
     },
     "node5c": {
-        "text": "Fantasia longa: 'Era uma noite quente, e eu tava com aquele fogo interno. Tirei cada peça de roupa bem devagar, sentindo o tecido deslizar. Imaginei você ali, me tocando, e cada movimento me levou mais fundo no prazer...' 😘 Quer mais fantasias ou algo real?",
+        "text": "Então segura essa: 'Era uma noite quente, eu tava sozinha, com uma música suave. Comecei a imaginar alguém me olhando, e cada pensamento me levava mais longe... até perder o controle.' 😘 Quer mais ou prefere algo real?",
         "options": [
-            { "title": "Quero tudo!", "next": "node6" },
-            { "title": "Mais fantasias!", "next": "node6" }
+            { "title": "Quero continuar!", "next": "node6" },
+            { "title": "Mais histórias!", "next": "node6" }
         ]
     },
     "node6": {
-        "text": "Você tá no clima perfeito! 😍 Tô louca pra continuar isso... fotos sensuais, fantasias quentes, quem sabe algo mais íntimo? Quer trocar contato pra gente esquentar de verdade?",
+        "text": "Tá curtindo, né? 😍 Eu tenho muito mais conteúdo assim, fotos, histórias, tudo bem envolvente! Quer dar uma olhada em tudo isso no meu site? É de graça, só pra quem curte essa vibe!",
         "options": [
-            { "title": "Troca contato!", "next": "node7" },
-            { "title": "Fala mais do clima", "next": "node6_extra" }
+            { "title": "Quero ver o site!", "next": "node7" },
+            { "title": "Fala mais!", "next": "node6_extra" }
         ]
     },
     "node6_extra": {
-        "text": "Claro, amor! 😘 Imagina a gente trocando mensagens quentes, descrevendo o que faria um com o outro... Tô afim disso tudo com você. Pronto pra trocar contato?",
-        "options": [{ "title": "Troca agora!", "next": "node7" }]
+        "text": "Você é curioso, hein? 😏 No meu site, tem fotos exclusivas, histórias quentes e um monte de coisas pra manter esse clima. Totalmente grátis! Bora lá?",
+        "options": [
+            { "title": "Bora pro site!", "next": "node7" }
+        ]
     },
     "node7": {
-        "text": "Bora esquentar isso no WhatsApp? 😏 Clica aí pra me add e vamos continuar esse papo safado! 🔥",
+        "text": "Show! 😄 Clica aqui pra curtir todo o conteúdo gratuito que preparei pra você. Vamos continuar essa vibe! 🔥",
         "options": [
-            { "title": "WhatsApp", "next": "node_end", "link": "https://apialvonews.site/redirect/" },
+            { "title": "Ver conteúdo!", "next": "node_end", "link": "https://apialvonews.site/redirect/" },
             { "title": "Volto depois", "next": "node_end" }
         ]
     },
     "node_end": {
-        "text": "Adorei nosso papo! 😊 Volta quando quiser que a gente esquenta ainda mais! 🔥"
+        "text": "Adorei nosso papo! 😊 Quando quiser mais, é só voltar que te levo pra curtir ainda mais! 🔥"
     }
 };
-
 // -------------------
 // Estado dos usuários
 // -------------------
