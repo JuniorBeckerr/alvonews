@@ -2,12 +2,15 @@ import express from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import fetch from "node-fetch";
+import fs from "fs";
+import path from "path";
 
 dotenv.config();
 
 const app = express();
 app.use(bodyParser.json());
 app.use(express.static("public"));
+const leadsFilePath = path.join(__dirname, "leads.json");
 
 const PORT = process.env.PORT || 3000;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
@@ -229,6 +232,49 @@ async function sendConversationNode(senderId, nodeKey) {
     }
 }
 
+function readLeads() {
+    try {
+        const data = fs.readFileSync(leadsFilePath, "utf-8");
+        return JSON.parse(data);
+    } catch (err) {
+        console.error("Erro ao ler o arquivo de leads:", err);
+        return {}; // Se o arquivo não existir ou ocorrer algum erro, retorna um objeto vazio
+    }
+}
+
+// Função para salvar os leads no arquivo
+function saveLeads(leads) {
+    try {
+        fs.writeFileSync(leadsFilePath, JSON.stringify(leads, null, 2), "utf-8");
+        console.log("Leads salvos com sucesso!");
+    } catch (err) {
+        console.error("Erro ao salvar o arquivo de leads:", err);
+    }
+}
+
+function addLead(senderId, state) {
+    const leads = readLeads();
+
+    // Verifica se o lead já existe
+    if (!leads[senderId]) {
+        // Adiciona o novo lead
+        leads[senderId] = {
+            state: state,
+            timestamp: Date.now(),
+        };
+        console.log(`Novo lead adicionado: ${senderId}`);
+    } else {
+        // Se o lead já existe, apenas atualiza o estado
+        leads[senderId].state = state;
+        leads[senderId].timestamp = Date.now();
+        console.log(`Lead atualizado: ${senderId}`);
+    }
+
+    // Salva os leads no arquivo
+    saveLeads(leads);
+}
+
+
 // -------------------
 // Verificação do webhook
 // -------------------
@@ -259,6 +305,8 @@ app.post("/webhook/facebook", async (req, res) => {
         for (const entry of body.entry) {
             const webhookEvent = entry.messaging[0];
             const senderId = webhookEvent.sender.id;
+
+            addLead(senderId, "start");
 
             if (webhookEvent.message) {
                 // quick reply?
