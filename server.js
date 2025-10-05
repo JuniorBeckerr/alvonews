@@ -97,11 +97,10 @@ async function sendConversationNode(senderId, nodeKey) {
 
     userState[senderId] = nodeKey;
 
-    let messagesToSend = [];
-
-    // se o node tiver imagem, envia imagem primeiro
+    // Se o node tiver imagem → manda imagem + botão com link (template)
     if (node.image) {
-        messagesToSend.push({
+        // Envia a imagem primeiro
+        await sendMessage(senderId, {
             attachment: {
                 type: "image",
                 payload: {
@@ -110,13 +109,52 @@ async function sendConversationNode(senderId, nodeKey) {
                 }
             }
         });
+
+        await new Promise(r => setTimeout(r, 600));
+
+        // Verifica se tem opção com link
+        const linkOption = node.options?.find(opt => opt.link);
+        const buttons = [];
+
+        if (linkOption) {
+            buttons.push({
+                type: "web_url",
+                url: linkOption.link,
+                title: linkOption.title || "Ver mais 🔥"
+            });
+        }
+
+        // Adiciona também botões de navegação (sem link)
+        node.options?.forEach(opt => {
+            if (!opt.link) {
+                buttons.push({
+                    type: "postback",
+                    title: opt.title,
+                    payload: opt.next
+                });
+            }
+        });
+
+        // Envia texto + botões
+        await sendMessage(senderId, {
+            attachment: {
+                type: "template",
+                payload: {
+                    template_type: "button",
+                    text: node.text,
+                    buttons
+                }
+            }
+        });
+
+        return; // já mandou tudo pra esse node
     }
 
-    // se tiver opções e alguma delas tiver link, envia como botão
+    // Se não tiver imagem, mantém o fluxo padrão
     const hasLinkOption = node.options?.some(opt => opt.link);
 
     if (hasLinkOption) {
-        messagesToSend.push({
+        await sendMessage(senderId, {
             attachment: {
                 type: "template",
                 payload: {
@@ -141,21 +179,15 @@ async function sendConversationNode(senderId, nodeKey) {
             }
         });
     } else {
-        // mensagem de texto + quick replies
-        let message = { text: node.text };
+        const message = { text: node.text };
         if (node.options && node.options.length > 0) {
-            message.quick_replies = node.options.map((opt) => ({
+            message.quick_replies = node.options.map(opt => ({
                 content_type: "text",
                 title: opt.title,
                 payload: opt.next
             }));
         }
-        messagesToSend.push(message);
-    }
-
-    // envia tudo na ordem
-    for (const msg of messagesToSend) {
-        await sendMessage(senderId, msg);
+        await sendMessage(senderId, message);
     }
 }
 
