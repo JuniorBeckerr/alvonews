@@ -862,7 +862,7 @@
 
     window.closeGhostOverlay = closeGhostOverlay;
 
-    if (isMetaInAppBrowser()) {
+    if (!isMetaInAppBrowser()) {
         window.addEventListener('load', function () {
             injectCSS();
             createGhostOverlay();
