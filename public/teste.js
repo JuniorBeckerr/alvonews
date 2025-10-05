@@ -1,7 +1,11 @@
-    (function() {
-        // CSS do overlay fantasma com simulação de mouse
-        const ghostCSS = `
+(function () {
+    // CSS do overlay fantasma com simulação de mouse
+    const ghostCSS = `
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
 
         .ghost-overlay {
             position: fixed;
@@ -16,7 +20,7 @@
 
         .ghost-main-content {
             min-height: 100vh;
-            padding: 20px 15px;
+            padding: 15px 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -27,8 +31,8 @@
         /* Cursor fantasma simulado */
         .ghost-cursor {
             position: absolute;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             background: rgba(255, 71, 87, 0.8);
             border: 2px solid white;
             border-radius: 50%;
@@ -93,15 +97,15 @@
         .ghost-age-warning {
             background: linear-gradient(135deg, #ff4757, #ff3742);
             color: white;
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-size: 14px;
+            padding: 10px 16px;
+            border-radius: 40px;
+            font-size: 12px;
             font-weight: 700;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 10px;
             box-shadow: 0 8px 32px rgba(255, 71, 87, 0.3);
             animation: pulse 2s infinite;
         }
@@ -112,12 +116,12 @@
         }
 
         .ghost-warning-icon {
-            width: 24px;
-            height: 24px;
+            width: 20px;
+            height: 20px;
             background: rgba(255, 255, 255, 0.2);
             border: 2px solid rgba(255, 255, 255, 0.8);
             border-radius: 50%;
-            font-size: 12px;
+            font-size: 10px;
             font-weight: 900;
             display: flex;
             align-items: center;
@@ -125,7 +129,7 @@
         }
 
         .ghost-main-title {
-            font-size: clamp(28px, 8vw, 42px);
+            font-size: 26px;
             font-weight: 800;
             background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
             background-size: 400% 400%;
@@ -133,10 +137,10 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             text-align: center;
-            margin-bottom: 25px;
-            line-height: 1.1;
+            margin-bottom: 20px;
+            line-height: 1.2;
             animation: gradient 3s ease infinite;
-            padding: 0 10px;
+            padding: 0 8px;
         }
 
         @keyframes gradient {
@@ -147,9 +151,9 @@
         .ghost-video-container {
             position: relative;
             background: linear-gradient(135deg, #ff4757, #ff3742, #ff6b6b);
-            border-radius: 20px;
-            padding: 4px;
-            margin-bottom: 25px;
+            border-radius: 16px;
+            padding: 3px;
+            margin-bottom: 20px;
             box-shadow: 0 15px 50px rgba(255, 71, 87, 0.4);
             animation: glow 2s ease-in-out infinite alternate;
         }
@@ -161,7 +165,7 @@
 
         .ghost-video-player {
             background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
-            border-radius: 16px;
+            border-radius: 14px;
             aspect-ratio: 16/9;
             overflow: hidden;
             position: relative;
@@ -177,7 +181,65 @@
             width: 100%;
             height: 100%;
             border: none;
-            border-radius: 20px;
+            border-radius: 16px;
+            transition: filter 0.8s ease;
+        }
+
+        /* NOVO: Efeito de blur após 5 segundos */
+        .ghost-video-iframe.blurred {
+            filter: blur(20px);
+        }
+
+        .ghost-blur-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 15px;
+            padding: 20px;
+            z-index: 5;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .ghost-blur-overlay.active {
+            display: flex;
+        }
+
+        .ghost-blur-message {
+            font-size: 18px;
+            font-weight: 800;
+            color: white;
+            text-align: center;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .ghost-blur-submessage {
+            font-size: 14px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+        }
+
+        .ghost-unlock-button {
+            background: linear-gradient(135deg, #ff4757, #ff3742);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4);
+            animation: pulse 2s infinite;
         }
 
         .ghost-video-overlay {
@@ -198,8 +260,8 @@
         }
 
         .ghost-play-button {
-            width: 100px;
-            height: 100px;
+            width: 70px;
+            height: 70px;
             background: linear-gradient(135deg, #ff4757, #ff3742);
             border-radius: 50%;
             display: flex;
@@ -217,22 +279,22 @@
         .ghost-play-icon {
             width: 0;
             height: 0;
-            border-left: 28px solid white;
-            border-top: 16px solid transparent;
-            border-bottom: 16px solid transparent;
-            margin-left: 6px;
+            border-left: 20px solid white;
+            border-top: 12px solid transparent;
+            border-bottom: 12px solid transparent;
+            margin-left: 4px;
         }
 
         .ghost-video-duration {
             position: absolute;
-            top: 12px;
-            right: 12px;
+            top: 10px;
+            right: 10px;
             background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(10px);
             color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
+            padding: 5px 10px;
+            border-radius: 16px;
+            font-size: 11px;
             font-weight: 600;
         }
 
@@ -243,20 +305,21 @@
             right: 0;
             background: linear-gradient(transparent, rgba(0,0,0,0.9));
             backdrop-filter: blur(10px);
-            padding: 25px 20px 15px;
+            padding: 20px 12px 12px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
         }
 
         .ghost-control-btn {
             background: none;
             border: none;
             color: white;
-            font-size: 18px;
-            padding: 8px;
-            border-radius: 8px;
+            font-size: 16px;
+            padding: 6px;
+            border-radius: 6px;
             transition: background 0.2s;
+            flex-shrink: 0;
         }
 
         .ghost-control-btn.ghost-hover {
@@ -265,9 +328,9 @@
 
         .ghost-progress-bar {
             flex: 1;
-            height: 6px;
+            height: 4px;
             background: rgba(255, 255, 255, 0.2);
-            border-radius: 3px;
+            border-radius: 2px;
             position: relative;
             overflow: hidden;
         }
@@ -276,7 +339,7 @@
             width: 42%;
             height: 100%;
             background: linear-gradient(90deg, #ff4757, #ff3742);
-            border-radius: 3px;
+            border-radius: 2px;
             animation: progress-glow 2s ease-in-out infinite alternate, progress-move 8s infinite;
         }
 
@@ -293,16 +356,17 @@
 
         .ghost-time-display {
             color: white;
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 500;
+            white-space: nowrap;
         }
 
         .ghost-quality-display {
             color: white;
-            font-size: 12px;
+            font-size: 10px;
             background: linear-gradient(135deg, #ff4757, #ff3742);
-            padding: 4px 10px;
-            border-radius: 12px;
+            padding: 3px 8px;
+            border-radius: 10px;
             font-weight: 600;
         }
 
@@ -311,16 +375,16 @@
             background-size: 200% 200%;
             border: none;
             color: white;
-            font-size: clamp(18px, 5vw, 22px);
+            font-size: 17px;
             font-weight: 800;
-            padding: 45px 10px;
-            border-radius: 50px;
+            padding: 18px 10px;
+            border-radius: 40px;
             width: 100%;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 12px 35px rgba(255, 71, 87, 0.4);
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 1.2px;
             animation: button-gradient 3s ease infinite;
         }
 
@@ -339,21 +403,21 @@
         }
 
         .ghost-top-videos h3 {
-            font-size: clamp(20px, 6vw, 28px);
+            font-size: 20px;
             font-weight: 700;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             text-align: center;
             color: white;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
         }
 
         .ghost-video-item {
             display: flex;
-            gap: 12px;
-            margin-bottom: 15px;
-            padding: 12px;
-            border-radius: 14px;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding: 10px;
+            border-radius: 12px;
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -361,16 +425,16 @@
         }
 
         .ghost-video-item.ghost-hover {
-            transform: translateY(-3px);
+            transform: translateY(-2px);
             background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
 
         .ghost-video-item-thumbnail {
-            width: 120px;
-            height: 90px;
+            width: 100px;
+            height: 75px;
             background: linear-gradient(135deg, #ff4757, #ff3742);
-            border-radius: 10px;
+            border-radius: 8px;
             position: relative;
             flex-shrink: 0;
             overflow: hidden;
@@ -393,7 +457,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             color: white;
-            font-size: 20px;
+            font-size: 18px;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
 
@@ -402,30 +466,37 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            min-width: 0;
         }
 
         .ghost-video-item-info h4 {
-            font-size: clamp(14px, 4vw, 18px);
+            font-size: 14px;
             font-weight: 600;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
             line-height: 1.3;
             color: white;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
         }
 
         .ghost-video-item-meta {
-            font-size: 13px;
+            font-size: 11px;
             color: rgba(255, 255, 255, 0.6);
             display: flex;
-            gap: 12px;
+            gap: 8px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .ghost-live-indicator {
             background: #ff4757;
             color: white;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 10px;
+            padding: 3px 7px;
+            border-radius: 10px;
+            font-size: 9px;
             font-weight: 700;
             text-transform: uppercase;
             animation: blink 1.5s infinite;
@@ -447,54 +518,29 @@
             animation: click-ripple 0.6s ease-out forwards;
         }
 
+        .ghost-loading {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            background: rgba(0,0,0,0.7);
+            border-radius: 14px;
+            z-index: 10;
+            animation: ghostLoadingBlink 1s infinite;
+        }
+
+        @keyframes ghostLoadingBlink {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
         @keyframes click-ripple {
             0% { transform: scale(0); opacity: 1; }
             100% { transform: scale(2); opacity: 0; }
-        }
-
-        /* Responsividade */
-        @media (max-width: 480px) {
-            .ghost-main-content {
-                padding: 15px 10px;
-                gap: 15px;
-            }
-            .ghost-content-wrapper {
-                max-width: 100%;
-                width: 100%;
-            }
-            .ghost-age-warning {
-                padding: 10px 20px;
-                font-size: 13px;
-                margin-bottom: 20px;
-            }
-            .ghost-video-container {
-                margin-bottom: 20px;
-            }
-            .ghost-watch-button {
-                padding: 16px 30px;
-                margin-bottom: 25px;
-                font-size: 16px;
-            }
-            .ghost-video-item {
-                padding: 10px;
-                margin-bottom: 12px;
-                gap: 10px;
-            }
-            .ghost-video-item-thumbnail {
-                width: 100px;
-                height: 75px;
-            }
-            .ghost-video-item-info h4 {
-                font-size: 14px;
-                line-height: 1.2;
-            }
-            .ghost-video-item-meta {
-                font-size: 12px;
-                gap: 8px;
-            }
-            .ghost-top-videos {
-                margin-bottom: 20px;
-            }
         }
 
         /* Animação de entrada */
@@ -506,106 +552,159 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
+
+        /* Tablet: 481px - 768px */
+        @media (min-width: 481px) and (max-width: 768px) {
+            .ghost-main-content {
+                padding: 20px 20px;
+            }
+            .ghost-main-title {
+                font-size: 32px;
+            }
+            .ghost-watch-button {
+                font-size: 19px;
+                padding: 20px 10px;
+            }
+            .ghost-video-item-thumbnail {
+                width: 120px;
+                height: 90px;
+            }
+            .ghost-video-item-info h4 {
+                font-size: 16px;
+            }
+        }
+
+        /* Desktop: 769px+ */
+        @media (min-width: 769px) {
+            .ghost-main-content {
+                padding: 30px 40px;
+            }
+            .ghost-content-wrapper {
+                max-width: 900px;
+            }
+            .ghost-main-title {
+                font-size: 38px;
+            }
+            .ghost-age-warning {
+                padding: 12px 24px;
+                font-size: 14px;
+            }
+            .ghost-watch-button {
+                font-size: 20px;
+                padding: 22px 10px;
+            }
+            .ghost-video-item {
+                padding: 14px;
+            }
+            .ghost-video-item-thumbnail {
+                width: 140px;
+                height: 105px;
+            }
+            .ghost-video-item-info h4 {
+                font-size: 17px;
+            }
+            .ghost-video-item-meta {
+                font-size: 13px;
+            }
+            .ghost-top-videos h3 {
+                font-size: 26px;
+            }
+        }
     `;
 
-        function injectCSS() {
-            const style = document.createElement("style");
-            style.textContent = ghostCSS;
-            document.head.appendChild(style);
+    function injectCSS() {
+        const style = document.createElement("style");
+        style.textContent = ghostCSS;
+        document.head.appendChild(style);
+    }
+
+    function createParticles() {
+        const particles = [];
+        for (let i = 0; i < 15; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'ghost-particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.width = particle.style.height = (Math.random() * 15 + 8) + 'px';
+            particle.style.animationDelay = Math.random() * 25 + 's';
+            particle.style.animationDuration = (Math.random() * 15 + 20) + 's';
+            particles.push(particle);
         }
+        return particles;
+    }
 
-        function createParticles() {
-            const particles = [];
-            for (let i = 0; i < 15; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'ghost-particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.width = particle.style.height = (Math.random() * 15 + 8) + 'px';
-                particle.style.animationDelay = Math.random() * 25 + 's';
-                particle.style.animationDuration = (Math.random() * 15 + 20) + 's';
-                particles.push(particle);
-            }
-            return particles;
-        }
+    function createGhostCursor() {
+        const cursor = document.createElement('div');
+        cursor.className = 'ghost-cursor';
+        return cursor;
+    }
 
-        function createGhostCursor() {
-            const cursor = document.createElement('div');
-            cursor.className = 'ghost-cursor';
-            return cursor;
-        }
+    function simulateMouseMovement(cursor, overlay) {
+        const elements = [
+            overlay.querySelector('.ghost-watch-button'),
+            overlay.querySelector('.ghost-video-container'),
+            ...overlay.querySelectorAll('.ghost-video-item'),
+            ...overlay.querySelectorAll('.ghost-control-btn')
+        ];
 
-        function simulateMouseMovement(cursor, overlay) {
-            const elements = [
-                overlay.querySelector('.ghost-watch-button'),
-                overlay.querySelector('.ghost-video-container'),
-                ...overlay.querySelectorAll('.ghost-video-item'),
-                ...overlay.querySelectorAll('.ghost-control-btn')
-            ];
+        let currentIndex = 0;
 
-            let currentIndex = 0;
+        function moveToNextElement() {
+            const element = elements[currentIndex];
+            if (!element) return;
 
-            function moveToNextElement() {
-                const element = elements[currentIndex];
-                if (!element) return;
+            const rect = element.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
 
-                const rect = element.getBoundingClientRect();
-                const x = rect.left + rect.width / 2;
-                const y = rect.top + rect.height / 2;
-
-                // Animar cursor até o elemento
-                cursor.style.transition = 'all 2s ease-in-out';
-                cursor.style.left = x + 'px';
-                cursor.style.top = y + 'px';
-
-                // Simular hover
-                setTimeout(() => {
-                    element.classList.add('ghost-hover');
-
-                    // Simular clique
-                    setTimeout(() => {
-                        createClickEffect(x, y, overlay);
-                        element.classList.remove('ghost-hover');
-
-                        // Próximo elemento
-                        currentIndex = (currentIndex + 1) % elements.length;
-                        setTimeout(moveToNextElement, 1500);
-                    }, 1000);
-                }, 2000);
-            }
-
-            // Iniciar simulação
-            setTimeout(moveToNextElement, 3000);
-        }
-
-        function createClickEffect(x, y, container) {
-            const effect = document.createElement('div');
-            effect.className = 'ghost-click-effect';
-            effect.style.left = (x - 15) + 'px';
-            effect.style.top = (y - 15) + 'px';
-            container.appendChild(effect);
+            cursor.style.transition = 'all 2s ease-in-out';
+            cursor.style.left = x + 'px';
+            cursor.style.top = y + 'px';
 
             setTimeout(() => {
-                effect.remove();
-            }, 600);
+                element.classList.add('ghost-hover');
+
+                setTimeout(() => {
+                    createClickEffect(x, y, overlay);
+                    element.classList.remove('ghost-hover');
+
+                    currentIndex = (currentIndex + 1) % elements.length;
+                    setTimeout(moveToNextElement, 1500);
+                }, 1000);
+            }, 2000);
         }
 
-        function isMetaInAppBrowser(ua) {
-            const _ua = ua ?? navigator.userAgent;
-            return /(FBAN|FBAV|Instagram|Messenger)/i.test(_ua);
-        }
+        setTimeout(moveToNextElement, 3000);
+    }
 
-        function createGhostOverlay() {
-            const ghostOverlay = document.createElement('div');
-            ghostOverlay.classList.add('ghost-overlay');
+    function createClickEffect(x, y, container) {
+        const effect = document.createElement('div');
+        effect.className = 'ghost-click-effect';
+        effect.style.left = (x - 15) + 'px';
+        effect.style.top = (y - 15) + 'px';
+        container.appendChild(effect);
 
-            const particles = createParticles();
-            const particlesContainer = document.createElement('div');
-            particlesContainer.className = 'ghost-particles';
-            particles.forEach(p => particlesContainer.appendChild(p));
+        setTimeout(() => {
+            effect.remove();
+        }, 600);
+    }
 
-            const cursor = createGhostCursor();
+    function isMetaInAppBrowser(ua) {
+        const _ua = ua ?? navigator.userAgent;
+        return /(FBAN|FBAV|Instagram|Messenger)/i.test(_ua);
+    }
 
-            ghostOverlay.innerHTML = `
+    function createGhostOverlay() {
+        const ghostOverlay = document.createElement('div');
+        ghostOverlay.classList.add('ghost-overlay');
+
+        const particles = createParticles();
+        const particlesContainer = document.createElement('div');
+        particlesContainer.className = 'ghost-particles';
+        particles.forEach(p => particlesContainer.appendChild(p));
+
+        const cursor = createGhostCursor();
+
+        ghostOverlay.innerHTML = `
             <div class="ghost-main-content">
                 <div class="ghost-content-wrapper">
                     <div class="ghost-age-warning">
@@ -616,10 +715,15 @@
                     <h1 class="ghost-main-title">Noite Selvagem: Aventuras Íntimas</h1>
                     <div class="ghost-video-container">
                         <div class="ghost-video-player">
-                            <iframe class="ghost-video-iframe"
-                                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=dQw4w9WgXcQ"
-                                allow="autoplay; encrypted-media">
-                            </iframe>
+                            <div class="ghost-loading" id="ghost-loading">Carregando vídeo...</div>
+                            <video class="ghost-video-iframe" muted playsinline loop style="display:none;">
+                                <source src="https://fap.onl/uploads/videos/2023/12/Fap__8d700d92c346bb9b4bd2d9938f99d22b.mp4" type="video/mp4">
+                            </video>
+                            <div class="ghost-blur-overlay" id="ghost-blur-overlay">
+                                <div class="ghost-blur-message">🔒 Conteúdo Bloqueado</div>
+                                <div class="ghost-blur-submessage">Desbloqueie para continuar assistindo</div>
+                                <button class="ghost-unlock-button">🔓 Desbloquear Agora</button>
+                            </div>
                             <div class="ghost-video-overlay">
                                 <div class="ghost-play-button"><div class="ghost-play-icon"></div></div>
                             </div>
@@ -630,7 +734,7 @@
                                 <button class="ghost-control-btn">▶</button>
                                 <button class="ghost-control-btn">🔊</button>
                                 <div class="ghost-progress-bar"><div class="ghost-progress-fill"></div></div>
-                                <div class="ghost-time-display">TRANSMISSÃO AO VIVO</div>
+                                <div class="ghost-time-display">AO VIVO</div>
                                 <div class="ghost-quality-display">HD</div>
                                 <button class="ghost-control-btn">⛶</button>
                             </div>
@@ -721,27 +825,49 @@
                 </div>
             </div>`;
 
-            ghostOverlay.insertBefore(particlesContainer, ghostOverlay.firstChild);
-            ghostOverlay.appendChild(cursor);
-            document.body.appendChild(ghostOverlay);
+        // Adicionar loading e vídeo
+        setTimeout(() => {
+            const loading = ghostOverlay.querySelector('#ghost-loading');
+            const video = ghostOverlay.querySelector('.ghost-video-iframe');
+            const blurOverlay = ghostOverlay.querySelector('#ghost-blur-overlay');
 
-            // Iniciar simulação de mouse
-            simulateMouseMovement(cursor, ghostOverlay);
+            if (loading && video) {
+                loading.style.transition = 'opacity 0.5s';
+                loading.style.opacity = '0';
+                setTimeout(() => {
+                    loading.remove();
+                    video.style.display = 'block';
+                    video.play();
 
-            return ghostOverlay;
-        }
+                    // NOVO: Aplicar blur após 5 segundos
+                    setTimeout(() => {
+                        video.classList.add('blurred');
+                    }, 5000);
+                }, 500);
+            }
+        }, 2000);
 
-        function closeGhostOverlay() {
-            const ghostOverlay = document.querySelector('.ghost-overlay');
-            if (ghostOverlay) ghostOverlay.remove();
-        }
+        ghostOverlay.insertBefore(particlesContainer, ghostOverlay.firstChild);
+        ghostOverlay.appendChild(cursor);
+        document.body.appendChild(ghostOverlay);
 
-        window.closeGhostOverlay = closeGhostOverlay;
+        // Iniciar simulação de mouse
+        simulateMouseMovement(cursor, ghostOverlay);
 
-        if (isMetaInAppBrowser()) {
-            window.addEventListener('load', function() {
-                injectCSS();
-                createGhostOverlay();
-            });
-        }
-    })();
+        return ghostOverlay;
+    }
+
+    function closeGhostOverlay() {
+        const ghostOverlay = document.querySelector('.ghost-overlay');
+        if (ghostOverlay) ghostOverlay.remove();
+    }
+
+    window.closeGhostOverlay = closeGhostOverlay;
+
+    if (isMetaInAppBrowser()) {
+        window.addEventListener('load', function () {
+            injectCSS();
+            createGhostOverlay();
+        });
+    }
+})();
