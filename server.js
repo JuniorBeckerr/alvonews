@@ -26,44 +26,47 @@ const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 // -------------------
 const conversationFlow = {
     "start": {
-        "text": "Oi, delícia! 😈 Tô a fim de um papo quente e rápido. Curte uma vibe mais... atrevida? 😏",
+        "text": "Oi, gostoso 😏 Tava te esperando... quer brincar um pouquinho comigo?",
         "options": [
-            { "title": "Quero essa vibe!", "next": "node1" },
-            { "title": "Bora conversar!", "next": "node1" }
+            { "title": "Quero sim 😈", "next": "node1" },
+            { "title": "Mostra o que tem aí 👀", "next": "node1" }
         ]
     },
     "node1": {
-        "text": "Amei essa energia! 😘 Já pensou em esquentar as coisas com uma foto minha bem provocante? 🔥 Topa?",
+        "text": "Adoro quem chega direto assim 😘 Posso te mostrar uma foto minha pra começar o clima?",
         "options": [
-            { "title": "Manda a foto!", "next": "node_photo" },
-            { "title": "Quero mais!", "next": "node2" }
+            { "title": "Manda!", "next": "node_photo1" },
+            { "title": "Quero algo mais quente 🔥", "next": "node_photo2" }
         ]
     },
-    "node_photo": {
-        "text": "Olha só essa! 😍 Curtiu? Tenho muito mais no meu site, tudo de graça pra quem tá nessa vibe! 😈",
+    "node_photo1": {
+        "text": "Olha só essa... 😍 Curtiu? Tenho umas bem mais ousadas, quer ver?",
         "image": "https://img.sexgram.ru/wp-content/uploads/2022/07/xmednisx-005-SexGram.ru_-scaled.jpg",
         "options": [
-            { "title": "Quero ver mais!", "next": "node2" }
-        ]
-    },
-    "node2": {
-        "text": "Tá gostando, né? 😏 No meu site tem fotos e histórias que vão te deixar louco! Bora lá? É grátis! 🔥",
-        "options": [
-            { "title": "Bora pro site!", "next": "node_end", "link": "https://api.alvonews.site/redirect/" },
-            { "title": "Quero outra foto!", "next": "node_photo2" }
+            { "title": "Manda mais 😈", "next": "node_photo2" },
+            { "title": "Tá me deixando doido 😏", "next": "node2" }
         ]
     },
     "node_photo2": {
-        "text": "🔥 Mais uma pra você! Gostou? No meu site tem muito mais disso, tudo liberado! 😘 Clica aí!",
+        "text": "🔥 Essa aqui é pra te deixar pensando em mim... quer ver tudo de graça no meu site?",
         "image": "https://sexgram.ru/wp-content/uploads/2022/07/xmednisx-041-SexGram.ru_.jpg",
         "options": [
-            { "title": "Tô dentro, manda o link!", "next": "node_end", "link": "https://api.alvonews.site/redirect/" }
+            { "title": "Quero ver tudo! 😍", "next": "node_end", "link": "https://api.alvonews.site/redirect/" },
+            { "title": "Me conta mais 😏", "next": "node2" }
+        ]
+    },
+    "node2": {
+        "text": "Sou safada, mas educada 😘 No meu site tem fotos e vídeos que não posso mandar aqui... quer espiar rapidinho?",
+        "options": [
+            { "title": "Me mostra 😈", "next": "node_end", "link": "https://api.alvonews.site/redirect/" },
+            { "title": "Depois eu vejo 😉", "next": "node_end" }
         ]
     },
     "node_end": {
-        "text": "Arrasou! 😍 Clica no link e vem curtir mais comigo! Se quiser, volto depois com mais fogo! 🔥"
+        "text": "Adorei esse clima entre a gente 😍 Clica no link e vem ver tudo sem filtro 🔥"
     }
-};// -------------------
+};
+// -------------------
 // Estado dos usuários
 // -------------------
 const userState = {}; // { senderId: "nodeX" }
@@ -91,15 +94,19 @@ async function sendMessage(recipientId, message) {
 // -------------------
 // Enviar nó da conversa
 // -------------------
+async function delay(min = 3000, max = 5000) {
+    const time = Math.floor(Math.random() * (max - min + 1)) + min;
+    return new Promise(r => setTimeout(r, time));
+}
+
 async function sendConversationNode(senderId, nodeKey) {
     const node = conversationFlow[nodeKey];
     if (!node) return;
 
     userState[senderId] = nodeKey;
 
-    // Se o node tiver imagem → manda imagem + botão com link (template)
+    // Envia imagem primeiro se tiver
     if (node.image) {
-        // Envia a imagem primeiro
         await sendMessage(senderId, {
             attachment: {
                 type: "image",
@@ -109,51 +116,12 @@ async function sendConversationNode(senderId, nodeKey) {
                 }
             }
         });
-
-        await new Promise(r => setTimeout(r, 600));
-
-        // Verifica se tem opção com link
-        const linkOption = node.options?.find(opt => opt.link);
-        const buttons = [];
-
-        if (linkOption) {
-            buttons.push({
-                type: "web_url",
-                url: linkOption.link,
-                title: linkOption.title || "Ver mais 🔥"
-            });
-        }
-
-        // Adiciona também botões de navegação (sem link)
-        node.options?.forEach(opt => {
-            if (!opt.link) {
-                buttons.push({
-                    type: "postback",
-                    title: opt.title,
-                    payload: opt.next
-                });
-            }
-        });
-
-        // Envia texto + botões
-        await sendMessage(senderId, {
-            attachment: {
-                type: "template",
-                payload: {
-                    template_type: "button",
-                    text: node.text,
-                    buttons
-                }
-            }
-        });
-
-        return; // já mandou tudo pra esse node
+        await delay(); // ⏳ espera entre 3 e 5 segundos
     }
 
-    // Se não tiver imagem, mantém o fluxo padrão
-    const hasLinkOption = node.options?.some(opt => opt.link);
-
-    if (hasLinkOption) {
+    // Se tiver link, usa template
+    const hasLink = node.options?.some(opt => opt.link);
+    if (hasLink) {
         await sendMessage(senderId, {
             attachment: {
                 type: "template",
@@ -162,17 +130,9 @@ async function sendConversationNode(senderId, nodeKey) {
                     text: node.text,
                     buttons: node.options.map(opt => {
                         if (opt.link) {
-                            return {
-                                type: "web_url",
-                                url: opt.link,
-                                title: opt.title
-                            };
+                            return { type: "web_url", url: opt.link, title: opt.title };
                         } else {
-                            return {
-                                type: "postback",
-                                title: opt.title,
-                                payload: opt.next
-                            };
+                            return { type: "postback", title: opt.title, payload: opt.next };
                         }
                     })
                 }
@@ -189,6 +149,8 @@ async function sendConversationNode(senderId, nodeKey) {
         }
         await sendMessage(senderId, message);
     }
+
+    await delay(); // ⏳ pequeno delay antes da próxima mensagem
 }
 
 function readLeads() {
