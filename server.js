@@ -235,10 +235,13 @@ app.post("/webhook/facebook", async (req, res) => {
                     const payload = webhookEvent.message.quick_reply.payload;
                     await sendConversationNode(senderId, payload);
                 }
-                // primeira mensagem
+
                 else if (webhookEvent.message.text) {
                     const userMessage = webhookEvent.message.text.toLowerCase();
-                    if (userMessage.includes("oi")) {
+
+                    const gatilhos = ["oi", "ola", "olá", "podemos conversar", "esta disponivel", "está disponível"];
+
+                    if (gatilhos.some(palavra => userMessage.includes(palavra))) {
                         await sendConversationNode(senderId, "start");
                     }
                 }
