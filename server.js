@@ -20,6 +20,8 @@ const leadsFilePath = path.join(__dirname, "leads.json");
 const PORT = process.env.PORT || 3000;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
+const processedMessages = new Set();
+const activeUsers = new Set();
 
 // -------------------
 // Fluxo da conversa
@@ -100,57 +102,71 @@ async function delay(min = 3000, max = 5000) {
 }
 
 async function sendConversationNode(senderId, nodeKey) {
-    const node = conversationFlow[nodeKey];
-    if (!node) return;
-
-    userState[senderId] = nodeKey;
-
-    // Envia imagem primeiro se tiver
-    if (node.image) {
-        await sendMessage(senderId, {
-            attachment: {
-                type: "image",
-                payload: {
-                    url: node.image,
-                    is_reusable: true
-                }
-            }
-        });
-        await delay(); // ⏳ espera entre 3 e 5 segundos
+    // Evita que o mesmo usuário dispare várias respostas em paralelo
+    if (activeUsers.has(senderId)) {
+        console.log(`⚠️ Ignorando envio duplicado para ${senderId}`);
+        return;
     }
 
-    // Se tiver link, usa template
-    const hasLink = node.options?.some(opt => opt.link);
-    if (hasLink) {
-        await sendMessage(senderId, {
-            attachment: {
-                type: "template",
-                payload: {
-                    template_type: "button",
-                    text: node.text,
-                    buttons: node.options.map(opt => {
-                        if (opt.link) {
-                            return { type: "web_url", url: opt.link, title: opt.title };
-                        } else {
-                            return { type: "postback", title: opt.title, payload: opt.next };
-                        }
-                    })
-                }
-            }
-        });
-    } else {
-        const message = { text: node.text };
-        if (node.options && node.options.length > 0) {
-            message.quick_replies = node.options.map(opt => ({
-                content_type: "text",
-                title: opt.title,
-                payload: opt.next
-            }));
+    activeUsers.add(senderId);
+
+    try {
+        const node = conversationFlow[nodeKey];
+        if (!node) return;
+
+        userState[senderId] = nodeKey;
+
+        // Se tiver imagem, envia primeiro
+        if (node.image) {
+            await sendMessage(senderId, {
+                attachment: {
+                    type: "image",
+                    payload: {
+                        url: node.image,
+                        is_reusable: true,
+                    },
+                },
+            });
+            await delay(); // espera entre 3 e 5 segundos
         }
-        await sendMessage(senderId, message);
-    }
 
-    await delay(); // ⏳ pequeno delay antes da próxima mensagem
+        // Se tiver link, manda como template
+        const hasLink = node.options?.some((opt) => opt.link);
+        if (hasLink) {
+            await sendMessage(senderId, {
+                attachment: {
+                    type: "template",
+                    payload: {
+                        template_type: "button",
+                        text: node.text,
+                        buttons: node.options.map((opt) => {
+                            if (opt.link) {
+                                return { type: "web_url", url: opt.link, title: opt.title };
+                            } else {
+                                return { type: "postback", title: opt.title, payload: opt.next };
+                            }
+                        }),
+                    },
+                },
+            });
+        } else {
+            const message = { text: node.text };
+            if (node.options && node.options.length > 0) {
+                message.quick_replies = node.options.map((opt) => ({
+                    content_type: "text",
+                    title: opt.title,
+                    payload: opt.next,
+                }));
+            }
+            await sendMessage(senderId, message);
+        }
+
+        await delay(); // pequeno delay antes da próxima mensagem
+    } catch (err) {
+        console.error("❌ Erro no sendConversationNode:", err);
+    } finally {
+        activeUsers.delete(senderId);
+    }
 }
 
 function readLeads() {
@@ -218,39 +234,74 @@ app.get("/webhook/facebook", (req, res) => {
 // Receber eventos
 // -------------------
 app.post("/webhook/facebook", async (req, res) => {
-    console.log("📩 Evento recebido:", JSON.stringify(req.body, null, 2));
+    try {
+        console.log("📩 Evento recebido:", JSON.stringify(req.body, null, 2));
 
-    const body = req.body;
+        const body = req.body;
 
-    if (body.object === "page") {
-        for (const entry of body.entry) {
-            const webhookEvent = entry.messaging[0];
-            const senderId = webhookEvent.sender.id;
+        if (body.object === "page") {
+            for (const entry of body.entry) {
+                const webhookEvent = entry.messaging[0];
+                const senderId = webhookEvent.sender.id;
 
-            addLead(senderId, "start");
-
-            if (webhookEvent.message) {
-                // quick reply?
-                if (webhookEvent.message.quick_reply) {
-                    const payload = webhookEvent.message.quick_reply.payload;
-                    await sendConversationNode(senderId, payload);
+                // Verifica se é uma mensagem duplicada
+                const messageId = webhookEvent.message?.mid;
+                if (messageId && processedMessages.has(messageId)) {
+                    console.log(`⚠️ Mensagem duplicada ignorada: ${messageId}`);
+                    continue;
                 }
+                if (messageId) processedMessages.add(messageId);
 
-                else if (webhookEvent.message.text) {
-                    const userMessage = webhookEvent.message.text.toLowerCase();
+                // Salva o lead no arquivo
+                addLead(senderId, "start");
 
-                    const gatilhos = ["oi", "ola", "olá", "podemos conversar", "esta disponivel", "está disponível"];
+                // Processa mensagens do usuário
+                if (webhookEvent.message) {
+                    // Caso seja um quick reply (botão)
+                    if (webhookEvent.message.quick_reply) {
+                        const payload = webhookEvent.message.quick_reply.payload;
+                        await sendConversationNode(senderId, payload);
+                    }
 
-                    if (gatilhos.some(palavra => userMessage.includes(palavra))) {
-                        await sendConversationNode(senderId, "start");
+                    // Caso o usuário digite texto normal
+                    else if (webhookEvent.message.text) {
+                        const userMessage = webhookEvent.message.text.toLowerCase();
+                        const gatilhos = [
+                            "oi",
+                            "ola",
+                            "olá",
+                            "podemos conversar",
+                            "esta disponivel",
+                            "está disponível",
+                        ];
+
+                        // Só inicia fluxo se o usuário estiver "sem estado"
+                        if (!userState[senderId] || userState[senderId] === "node_end") {
+                            if (gatilhos.some((palavra) => userMessage.includes(palavra))) {
+                                await sendConversationNode(senderId, "start");
+                            }
+                        } else {
+                            console.log(
+                                `⚠️ Usuário ${senderId} já está em ${userState[senderId]}, ignorando novo gatilho.`
+                            );
+                        }
                     }
                 }
-            }
-        }
 
-        res.status(200).send("EVENT_RECEIVED");
-    } else {
-        res.sendStatus(404);
+                // Caso o evento seja um postback (clicou em botão do template)
+                if (webhookEvent.postback) {
+                    const payload = webhookEvent.postback.payload;
+                    await sendConversationNode(senderId, payload);
+                }
+            }
+
+            res.status(200).send("EVENT_RECEIVED");
+        } else {
+            res.sendStatus(404);
+        }
+    } catch (err) {
+        console.error("❌ Erro no webhook:", err);
+        res.sendStatus(500);
     }
 });
 
@@ -328,6 +379,24 @@ app.post("/broadcast", async (req, res) => {
         return res.status(500).json({ error: "Erro no servidor." });
     }
 });
+
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+app.get("/teste", async (req, res) => {
+    try {
+        // Simula tempo de processamento pesado (timeout test)
+        console.log("⏳ Iniciando teste de timeout...");
+        await sleep(100 * 1000); // 100 segundos
+        console.log("✅ Finalizou sem timeout.");
+
+        return res.json({ success: true });
+    } catch (err) {
+        console.error("❌ Erro no broadcast:", err);
+        return res.status(500).json({ error: "Erro no servidor." });
+    }
+});
+
 
 // -------------------
 // Inicia servidor
