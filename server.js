@@ -252,38 +252,41 @@ app.post("/webhook/facebook", async (req, res) => {
                 }
                 if (messageId) processedMessages.add(messageId);
 
-                // Salva o lead no arquivo
-                addLead(senderId, "start");
-
-                // Processa mensagens do usuário
+                // 🔹 Só processa se for uma mensagem do usuário
                 if (webhookEvent.message) {
                     // Caso seja um quick reply (botão)
                     if (webhookEvent.message.quick_reply) {
                         const payload = webhookEvent.message.quick_reply.payload;
+                        addLead(senderId, payload); // salva o estado real
                         await sendConversationNode(senderId, payload);
+                        continue;
                     }
 
                     // Caso o usuário digite texto normal
-                    else if (webhookEvent.message.text) {
-                        const userMessage = webhookEvent.message.text.toLowerCase();
+                    if (webhookEvent.message.text) {
+                        const userMessage = webhookEvent.message.text.toLowerCase().trim();
                         const gatilhos = [
                             "oi",
                             "ola",
                             "olá",
                             "podemos conversar",
                             "esta disponivel",
-                            "Esta disponvel?",
                             "está disponível",
+                            "fala",
+                            "eai",
                         ];
 
-                        // Só inicia fluxo se o usuário estiver "sem estado"
-                        if (!userState[senderId] || userState[senderId] === "node_end") {
-                            if (gatilhos.some((palavra) => userMessage.includes(palavra))) {
-                                await sendConversationNode(senderId, "start");
-                            }
+                        // Só inicia o fluxo se o usuário estiver "sem estado" e a msg for um gatilho
+                        const isGatilho = gatilhos.some((palavra) =>
+                            userMessage.includes(palavra)
+                        );
+
+                        if (isGatilho && (!userState[senderId] || userState[senderId] === "node_end")) {
+                            addLead(senderId, "start");
+                            await sendConversationNode(senderId, "start");
                         } else {
                             console.log(
-                                `⚠️ Usuário ${senderId} já está em ${userState[senderId]}, ignorando novo gatilho.`
+                                `❌ Ignorado: mensagem "${userMessage}" não é gatilho ou usuário já está em fluxo (${userState[senderId]})`
                             );
                         }
                     }
@@ -292,6 +295,7 @@ app.post("/webhook/facebook", async (req, res) => {
                 // Caso o evento seja um postback (clicou em botão do template)
                 if (webhookEvent.postback) {
                     const payload = webhookEvent.postback.payload;
+                    addLead(senderId, payload);
                     await sendConversationNode(senderId, payload);
                 }
             }
