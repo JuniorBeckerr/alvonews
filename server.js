@@ -272,6 +272,7 @@ app.post("/webhook/facebook", async (req, res) => {
                             "olá",
                             "podemos conversar",
                             "esta disponivel",
+                            "Esta disponvel?",
                             "está disponível",
                         ];
 
