@@ -358,27 +358,89 @@ app.get("/redirect", async (req, res) => {
 // -------------------
 app.post("/broadcast", async (req, res) => {
     try {
-        const { recipients, message } = req.body;
-        if (!Array.isArray(recipients) || recipients.length === 0) {
-            return res.status(400).json({ error: "Envie um array de recipients" });
-        }
+        // lê o arquivo JSON com os IDs
+        const raw = fs.readFileSync("leads.json", "utf8");
+        const data = JSON.parse(raw);
+        const recipients = Object.keys(data);
+
+        const { message } = req.body;
+
+        if (!Array.isArray(recipients) || recipients.length === 0)
+            return res.status(400).json({ error: "Nenhum recipient encontrado no arquivo." });
+
+        if (!message)
+            return res.status(400).json({ error: "Envie uma mensagem no body." });
 
         const messages = Array.isArray(message) ? message : [message];
-
         const results = [];
+        let successCount = 0;
+        let errorCount = 0;
+
         for (const id of recipients) {
-            try {
-                for (const msg of messages) {
-                    await sendMessage(id, msg);
+            let hasError = false;
+
+            for (const msg of messages) {
+                try {
+                    const response = await sendMessage(id, msg);
+
+                    // trata erro retornado direto no objeto
+                    if (response?.error) {
+                        const fbError = response.error;
+                        console.error(`❌ Erro enviando para ${id}:`, fbError.message);
+
+                        results.push({
+                            id,
+                            status: "erro",
+                            code: fbError.code || null,
+                            subcode: fbError.error_subcode || null,
+                            message: fbError.message || "Erro desconhecido"
+                        });
+
+                        hasError = true;
+                        break; // pula pro próximo id
+                    }
+
+                    // se não tiver erro explícito, registra sucesso
+                    if (response?.recipient_id && response?.message_id) {
+                        console.log("📤 Mensagem enviada:", response);
+                    }
+
+                } catch (err) {
+                    // trata erros lançados por exceção
+                    const fbError = err?.response?.data?.error || err;
+                    console.error(`❌ Exceção enviando para ${id}:`, fbError.message || fbError);
+
+                    results.push({
+                        id,
+                        status: "erro",
+                        code: fbError.code || null,
+                        subcode: fbError.error_subcode || null,
+                        message: fbError.message || "Erro desconhecido"
+                    });
+
+                    hasError = true;
+                    break;
                 }
+            }
+
+            if (!hasError) {
                 results.push({ id, status: "ok" });
-            } catch (err) {
-                console.error(`Erro enviando para ${id}:`, err);
-                results.push({ id, status: "erro" });
+                successCount++;
+            } else {
+                errorCount++;
             }
         }
 
-        return res.json({ success: true, results });
+        return res.json({
+            success: true,
+            summary: {
+                total: recipients.length,
+                success: successCount,
+                errors: errorCount
+            },
+            results
+        });
+
     } catch (err) {
         console.error("❌ Erro no broadcast:", err);
         return res.status(500).json({ error: "Erro no servidor." });
